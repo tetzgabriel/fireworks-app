@@ -4,7 +4,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'fireworks_events.dart';
 import 'services/holiday_service.dart';
-import 'services/soccer_service.dart';
 
 void main() {
   initializeDateFormatting().then((_) {
@@ -48,12 +47,10 @@ class MyApp extends StatelessWidget {
 
 class FireworksCalendarPage extends StatefulWidget {
   final HolidayService? holidayService;
-  final SoccerService? soccerService;
 
   const FireworksCalendarPage({
     super.key,
     this.holidayService,
-    this.soccerService,
   });
 
   @override
@@ -67,7 +64,6 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
   DateTime? _selectedDay;
   
   late final HolidayService _holidayService;
-  late final SoccerService _soccerService;
   Map<DateTime, List<FireworksEvent>> _events = {};
   bool _isLoading = true;
   String? _errorMessage;
@@ -76,7 +72,6 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
   void initState() {
     super.initState();
     _holidayService = widget.holidayService ?? HolidayService();
-    _soccerService = widget.soccerService ?? SoccerService();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier([]);
     _fetchEvents();
@@ -96,10 +91,6 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
       final holidaysCurrentYear = await _holidayService.fetchHolidays(currentYear);
       final holidaysNextYear = await _holidayService.fetchHolidays(nextYear);
 
-      // Fetch soccer games
-      final soccerCurrentYear = await _soccerService.fetchSoccerEvents(currentYear);
-      final soccerNextYear = await _soccerService.fetchSoccerEvents(nextYear);
-
       // Merge all events
       final allEvents = <DateTime, List<FireworksEvent>>{};
       
@@ -115,8 +106,6 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
 
       merge(holidaysCurrentYear);
       merge(holidaysNextYear);
-      merge(soccerCurrentYear);
-      merge(soccerNextYear);
 
       setState(() {
         _events = allEvents;

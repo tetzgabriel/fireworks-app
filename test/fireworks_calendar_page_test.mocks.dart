@@ -9,7 +9,6 @@ import 'package:http/http.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:vai_ter_fogos_hoje/fireworks_events.dart' as _i5;
 import 'package:vai_ter_fogos_hoje/services/holiday_service.dart' as _i3;
-import 'package:vai_ter_fogos_hoje/services/soccer_service.dart' as _i6;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -53,28 +52,6 @@ class MockHolidayService extends _i1.Mock implements _i3.HolidayService {
   ) =>
       (super.noSuchMethod(
             Invocation.method(#fetchHolidays, [year]),
-            returnValue:
-                _i4.Future<Map<DateTime, List<_i5.FireworksEvent>>>.value(
-                  <DateTime, List<_i5.FireworksEvent>>{},
-                ),
-          )
-          as _i4.Future<Map<DateTime, List<_i5.FireworksEvent>>>);
-}
-
-/// A class which mocks [SoccerService].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockSoccerService extends _i1.Mock implements _i6.SoccerService {
-  MockSoccerService() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i4.Future<Map<DateTime, List<_i5.FireworksEvent>>> fetchSoccerEvents(
-    int? year,
-  ) =>
-      (super.noSuchMethod(
-            Invocation.method(#fetchSoccerEvents, [year]),
             returnValue:
                 _i4.Future<Map<DateTime, List<_i5.FireworksEvent>>>.value(
                   <DateTime, List<_i5.FireworksEvent>>{},
