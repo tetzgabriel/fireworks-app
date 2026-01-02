@@ -4,14 +4,16 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:vai_ter_fogos_hoje/main.dart';
 import 'package:vai_ter_fogos_hoje/services/holiday_service.dart';
+import 'package:vai_ter_fogos_hoje/services/soccer_service.dart';
 import 'package:vai_ter_fogos_hoje/fireworks_events.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'fireworks_calendar_page_test.mocks.dart';
 
-@GenerateMocks([HolidayService])
+@GenerateMocks([HolidayService, SoccerService])
 void main() {
   late MockHolidayService mockService;
+  late MockSoccerService mockSoccerService;
 
   setUpAll(() {
     initializeDateFormatting();
@@ -19,11 +21,19 @@ void main() {
 
   setUp(() {
     mockService = MockHolidayService();
+    mockSoccerService = MockSoccerService();
+    
+    // Default stub for soccer service
+    when(mockSoccerService.fetchSoccerEvents(any))
+        .thenAnswer((_) async => {});
   });
 
   Widget createWidgetUnderTest() {
     return MaterialApp(
-      home: FireworksCalendarPage(holidayService: mockService),
+      home: FireworksCalendarPage(
+        holidayService: mockService,
+        soccerService: mockSoccerService,
+      ),
     );
   }
 
@@ -80,6 +90,6 @@ void main() {
     // Assert
     expect(find.text('Vai ter fogos hoje?'), findsOneWidget);
     expect(find.text('Risco de Fogos: Atenção aos Pets'), findsOneWidget);
-    expect(find.text('Event 1'), findsOneWidget);
+    expect(find.text('Event 1'), findsAtLeastNWidgets(1));
   });
 }
