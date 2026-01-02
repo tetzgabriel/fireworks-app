@@ -55,6 +55,15 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     }
   }
 
+  String _formatDate() {
+    final date = DateFormat("d 'de' MMMM", 'pt_BR').format(DateTime.now());
+    return date.split(' ').map((word) {
+      if (word.toLowerCase() == 'de') return word;
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1);
+    }).join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -70,8 +79,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: hasFireworks
-                ? [const Color(0xFF2E003E), const Color(0xFF000000)] // Purple to Black (Celebration)
-                : [const Color(0xFF0F2027), const Color(0xFF203A43)], // Dark Blue (Calm)
+                ? [const Color(0xFFBA68C8), const Color(0xFFF06292)] // Purple to Pink (Celebration)
+                : [const Color(0xFFE6DECE), const Color(0xFFF9F5F0)], // Warm Beige to Cream (Cozy)
           ),
         ),
         child: SafeArea(
@@ -86,12 +95,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        DateFormat('d "de" MMMM', 'pt_BR').format(DateTime.now()),
+                        _formatDate(),
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w300,
+                        style: TextStyle(
+                          color: hasFireworks ? Colors.white : const Color(0xFF5D4037),
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 1.2,
                         ),
                       ),
                       const Spacer(),
@@ -104,9 +114,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                 parent: _controller,
                                 curve: Curves.easeInOut,
                               )),
-                              child: const Icon(Icons.celebration_rounded, size: 120, color: Colors.amber),
+                              child: const Icon(Icons.celebration_rounded, size: 120, color: Colors.white),
                             )
-                          : const Icon(Icons.nights_stay_rounded, size: 100, color: Colors.lightBlueAccent),
+                          : const Icon(Icons.weekend_rounded, size: 100, color: Color(0xFF8D6E63)),
                       ),
                       
                       const SizedBox(height: 32),
@@ -117,11 +127,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 80,
-                          fontWeight: FontWeight.bold,
-                          color: hasFireworks ? Colors.amber : Colors.white,
+                          fontWeight: FontWeight.w900,
+                          color: hasFireworks ? Colors.white : const Color(0xFF4E342E),
                           shadows: [
                             BoxShadow(
-                              color: hasFireworks ? Colors.amber.withValues(alpha: 0.5) : Colors.black26,
+                              color: hasFireworks ? Colors.purple.withValues(alpha: 0.3) : Colors.brown.withValues(alpha: 0.1),
                               blurRadius: 20,
                               offset: const Offset(0, 4),
                             )
@@ -133,13 +143,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       
                       Text(
                         hasFireworks 
-                          ? 'Hoje vai ter fogos!' 
-                          : 'Hoje a noite será tranquila.',
+                          ? 'Vai ter fogos hoje! 🎆' 
+                          : 'O dia será tranquilo! 🐶🐱',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w300,
+                          color: hasFireworks ? Colors.white : const Color(0xFF5D4037),
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
 
@@ -148,8 +158,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                           ),
                           child: Column(
                             children: _todayEvents.map((e) => Column(
@@ -157,7 +168,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                 Text(
                                   e.title,
                                   style: const TextStyle(
-                                    color: Colors.amberAccent,
+                                    color: Colors.white,
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -179,10 +190,25 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
                       const Spacer(),
                       if (hasFireworks)
-                        const Text(
-                          "⚠️ Mantenha seus pets seguros!",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.redAccent),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.pets, color: Colors.purpleAccent, size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                "Proteja seus bichinhos! 🎧🐕",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.purpleAccent, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                     ],
                   ),

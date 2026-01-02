@@ -111,44 +111,59 @@ class _CalendarPageState extends State<CalendarPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: const Color(0xFF2C2C2C),
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-              title: const Text('Criar Lembrete', style: TextStyle(color: Colors.amber)),
+              title: const Text('Criar Lembrete', style: TextStyle(color: Color(0xFF8D6E63))),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
                       controller: titleController,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.black87),
                       decoration: const InputDecoration(
                         labelText: 'Título',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                        labelStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF8D6E63))),
                       ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
                       controller: descController,
-                      style: const TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.black87),
                       decoration: const InputDecoration(
                         labelText: 'Descrição',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white30)),
+                        labelStyle: TextStyle(color: Colors.grey),
+                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF8D6E63))),
                       ),
                       maxLines: 3,
                     ),
                     const SizedBox(height: 16),
                     ListTile(
-                      title: const Text("Horário", style: TextStyle(color: Colors.white)),
+                      title: const Text("Horário", style: TextStyle(color: Colors.black87)),
                       trailing: Text(
                         selectedTime.format(context), 
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.amber)
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF8D6E63))
                       ),
                       onTap: () async {
                         final picked = await showTimePicker(
                           context: context,
                           initialTime: selectedTime,
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Color(0xFF8D6E63),
+                                  onPrimary: Colors.white,
+                                  onSurface: Colors.black87,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         if (picked != null) {
                           setState(() {
@@ -156,7 +171,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           });
                         }
                       },
-                      tileColor: Colors.black12,
+                      tileColor: Colors.grey[100],
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ],
@@ -165,7 +180,7 @@ class _CalendarPageState extends State<CalendarPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar', style: TextStyle(color: Colors.white60)),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -192,10 +207,11 @@ class _CalendarPageState extends State<CalendarPage> {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber,
+                    backgroundColor: const Color(0xFF8D6E63),
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Adicionar', style: TextStyle(color: Colors.black)),
+                  child: const Text('Adicionar'),
                 ),
               ],
             );
@@ -211,18 +227,18 @@ class _CalendarPageState extends State<CalendarPage> {
       backgroundColor: Colors.transparent, // Background handled by parent
       body: SafeArea(
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.amber))
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFF8D6E63)))
             : _errorMessage != null
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.cloud_off, color: Colors.white38, size: 64),
+                        const Icon(Icons.cloud_off, color: Colors.grey, size: 64),
                         const SizedBox(height: 16),
-                        Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
+                        Text(_errorMessage!, style: const TextStyle(color: Colors.grey)),
                         TextButton(
                           onPressed: _fetchEvents,
-                          child: const Text('Tentar novamente', style: TextStyle(color: Colors.amber)),
+                          child: const Text('Tentar novamente', style: TextStyle(color: Color(0xFF8D6E63))),
                         ),
                       ],
                     ),
@@ -246,11 +262,11 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget _buildCalendar() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E2C), // Darker cozy blue-grey
+        color: Colors.white,
         borderRadius: BorderRadius.circular(24.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -272,28 +288,28 @@ class _CalendarPageState extends State<CalendarPage> {
         startingDayOfWeek: StartingDayOfWeek.sunday,
         calendarStyle: CalendarStyle(
           outsideDaysVisible: false,
-          weekendTextStyle: const TextStyle(color: Colors.orangeAccent),
-          holidayTextStyle: const TextStyle(color: Colors.redAccent),
-          defaultTextStyle: const TextStyle(color: Colors.white),
+          weekendTextStyle: const TextStyle(color: Color(0xFFE57373)), // Soft Red
+          holidayTextStyle: const TextStyle(color: Color(0xFFF06292)), // Soft Pink
+          defaultTextStyle: const TextStyle(color: Color(0xFF4A4A4A)),
           selectedDecoration: const BoxDecoration(
-            color: Colors.amber,
+            color: Color(0xFF8D6E63), // Cocoa
             shape: BoxShape.circle,
           ),
           todayDecoration: BoxDecoration(
-            color: Colors.amber.withValues(alpha: 0.3),
+            color: const Color(0xFF8D6E63).withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           markerDecoration: const BoxDecoration(
-            color: Colors.redAccent,
+            color: Color(0xFFA1887F), // Light Cocoa
             shape: BoxShape.circle,
           ),
         ),
         headerStyle: const HeaderStyle(
           titleCentered: true,
           formatButtonVisible: false,
-          titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-          leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white70),
-          rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white70),
+          titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF4E342E)),
+          leftChevronIcon: Icon(Icons.chevron_left, color: Colors.grey),
+          rightChevronIcon: Icon(Icons.chevron_right, color: Colors.grey),
         ),
         onDaySelected: _onDaySelected,
         onFormatChanged: (format) {
@@ -321,14 +337,14 @@ class _CalendarPageState extends State<CalendarPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.nightlight_round,
+                  Icons.weekend_rounded,
                   size: 48,
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: Colors.grey.withValues(alpha: 0.2),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Nenhum evento neste dia',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.3)),
+                  'Dia tranquilo, sem eventos! 🐶',
+                  style: TextStyle(color: Colors.grey.withValues(alpha: 0.5)),
                 ),
               ],
             ),
@@ -343,11 +359,11 @@ class _CalendarPageState extends State<CalendarPage> {
             return Container(
               margin: const EdgeInsets.symmetric(vertical: 8.0),
               decoration: BoxDecoration(
-                color: const Color(0xFF252535),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   )
@@ -365,19 +381,19 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
                 title: Text(
                   event.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4E342E)),
                 ),
                 subtitle: event.description.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.only(top: 4.0),
                         child: Text(
                           event.description,
-                          style: const TextStyle(color: Colors.white70),
+                          style: const TextStyle(color: Color(0xFF757575)),
                         ),
                       )
                     : null,
                 trailing: IconButton(
-                  icon: const Icon(Icons.calendar_today_rounded, color: Colors.amber),
+                  icon: const Icon(Icons.calendar_today_rounded, color: Color(0xFF8D6E63)),
                   tooltip: 'Adicionar à agenda',
                   onPressed: () {
                     _showCalendarDialog(context, event, _selectedDay!);

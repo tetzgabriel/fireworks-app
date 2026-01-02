@@ -20,16 +20,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Vai ter fogos hoje?',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF121212),
-        colorScheme: const ColorScheme.dark(
-          primary: Colors.amber,
-          secondary: Colors.pinkAccent,
-          surface: Color(0xFF1E1E1E),
+      theme: ThemeData.light().copyWith(
+        scaffoldBackgroundColor: const Color(0xFFFFF9F0), // Creamy white
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF8D6E63), // Warm Cocoa
+          primary: const Color(0xFF8D6E63), // Warm Cocoa
+          secondary: const Color(0xFFA1887F), // Lighter Cocoa
+          surface: const Color(0xFFFFFFFF),
         ),
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontFamily: 'Roboto', color: Colors.white),
-          bodyMedium: TextStyle(fontFamily: 'Roboto', color: Colors.white70),
+          bodyLarge: TextStyle(
+            fontFamily: 'Roboto',
+            color: Color(0xFF4E342E),
+          ), // Dark Brown Text
+          bodyMedium: TextStyle(
+            fontFamily: 'Roboto',
+            color: Color(0xFF795548),
+          ), // Medium Brown Text
         ),
       ),
       home: MainScreen(holidayService: holidayService),
@@ -68,10 +75,10 @@ class _MainScreenState extends State<MainScreen> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E2C),
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: Colors.brown.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -79,7 +86,10 @@ class _MainScreenState extends State<MainScreen> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -105,7 +115,10 @@ class _MainScreenState extends State<MainScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withValues(alpha: 0.2) : Colors.transparent,
+          color:
+              isSelected
+                  ? const Color(0xFFD7CCC8)
+                  : Colors.transparent, // Lighter Cocoa
           borderRadius: BorderRadius.circular(30),
         ),
         child: Row(
@@ -113,7 +126,10 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.amber : Colors.white60,
+              color:
+                  isSelected
+                      ? const Color(0xFF5D4037)
+                      : Colors.grey[400], // Darker Cocoa
               size: 28,
             ),
             if (isSelected) ...[
@@ -121,7 +137,7 @@ class _MainScreenState extends State<MainScreen> {
               Text(
                 label,
                 style: const TextStyle(
-                  color: Colors.amber,
+                  color: Color(0xFF5D4037),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),

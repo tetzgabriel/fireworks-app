@@ -36,7 +36,7 @@ void main() {
 
     // Assert
     expect(find.text('Não'), findsOneWidget);
-    expect(find.text('Hoje a noite será tranquila.'), findsOneWidget);
+    expect(find.text('O dia será tranquilo! 🐶🐱'), findsOneWidget);
   });
 
   testWidgets('HomePage shows "SIM!" when there are fireworks today', (WidgetTester tester) async {
@@ -58,7 +58,7 @@ void main() {
 
     // Assert
     expect(find.text('SIM!'), findsOneWidget);
-    expect(find.text('Hoje vai ter fogos!'), findsOneWidget);
+    expect(find.text('Vai ter fogos hoje! 🎆'), findsOneWidget);
     expect(find.text('Ano Novo'), findsOneWidget);
   });
 
