@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'fireworks_events.dart';
+import 'services/holiday_service.dart';
 
 void main() {
   initializeDateFormatting().then((_) {
@@ -51,12 +52,44 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  
+  final HolidayService _holidayService = HolidayService();
+  Map<DateTime, List<FireworksEvent>> _events = {};
+  bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _selectedEvents = ValueNotifier([]);
+    _fetchEvents();
+  }
+
+  Future<void> _fetchEvents() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      final currentYear = DateTime.now().year;
+      final nextYear = currentYear + 1;
+
+      final eventsCurrentYear = await _holidayService.fetchHolidays(currentYear);
+      final eventsNextYear = await _holidayService.fetchHolidays(nextYear);
+
+      setState(() {
+        _events = {...eventsCurrentYear, ...eventsNextYear};
+        _isLoading = false;
+        _selectedEvents.value = _getEventsForDay(_selectedDay!);
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Erro ao carregar eventos. Verifique sua conexão.';
+      });
+    }
   }
 
   @override
@@ -66,13 +99,8 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
   }
 
   List<FireworksEvent> _getEventsForDay(DateTime day) {
-    // Normalize date to UTC to match our key definition if necessary,
-    // or just ensure keys in kEvents are compatible.
-    // kEvents keys are UTC 00:00:00.
-    // TableCalendar usually returns local or UTC depending on input.
-    // Let's normalize just the date part (year, month, day).
     final normalizedDay = DateTime.utc(day.year, day.month, day.day);
-    return kEvents[normalizedDay] ?? [];
+    return _events[normalizedDay] ?? [];
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
@@ -95,15 +123,37 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber),
         ),
       ),
-      body: Column(
-        children: [
-          _buildCalendar(),
-          const SizedBox(height: 16),
-          Expanded(
-            child: _buildEventList(),
-          ),
-        ],
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Colors.amber))
+          : _errorMessage != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                      const SizedBox(height: 16),
+                      Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.redAccent),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _fetchEvents,
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                        child: const Text('Tentar novamente', style: TextStyle(color: Colors.black)),
+                      ),
+                    ],
+                  ),
+                )
+              : Column(
+                  children: [
+                    _buildCalendar(),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: _buildEventList(),
+                    ),
+                  ],
+                ),
     );
   }
 

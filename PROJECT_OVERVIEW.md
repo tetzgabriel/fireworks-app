@@ -9,14 +9,17 @@
 - **Key Packages:**
     - `table_calendar`: For the calendar UI.
     - `intl`: For date formatting and locale support (pt_BR).
+    - `http`: For fetching holiday data from the API.
 
 ## Key Features
 - Month-by-month calendar view.
-- Event markers for days with fireworks.
+- Event markers for days with fireworks (based on holidays).
 - Detailed list of events for selected days.
 - Dark, festive theme ("beautiful" design).
 - Localized for Brazil (pt_BR).
+- Real-time data fetching from `BrasilAPI`.
 
 ## File Structure
 - `lib/main.dart`: Main entry point and UI implementation.
-- `lib/fireworks_events.dart`: Data model and hardcoded event data.
+- `lib/fireworks_events.dart`: Data model for events.
+- `lib/services/holiday_service.dart`: Service to fetch holidays from the API.
