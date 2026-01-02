@@ -5,9 +5,12 @@ import '../fireworks_events.dart';
 
 class HolidayService {
   static const String _baseUrl = 'https://brasilapi.com.br/api/feriados/v1';
+  final http.Client client;
+
+  HolidayService({http.Client? client}) : client = client ?? http.Client();
 
   Future<Map<DateTime, List<FireworksEvent>>> fetchHolidays(int year) async {
-    final response = await http.get(Uri.parse('$_baseUrl/$year'));
+    final response = await client.get(Uri.parse('$_baseUrl/$year'));
 
     if (response.statusCode == 200) {
       // Decode with UTF-8 support

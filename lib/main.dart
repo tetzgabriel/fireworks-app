@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'fireworks_events.dart';
 import 'services/holiday_service.dart';
 
@@ -34,6 +35,10 @@ class MyApp extends StatelessWidget {
           color: const Color(0xFF2C2C2C),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
+        dialogTheme: DialogTheme(
+          backgroundColor: const Color(0xFF2C2C2C),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
       ),
       home: const FireworksCalendarPage(),
     );
@@ -41,7 +46,9 @@ class MyApp extends StatelessWidget {
 }
 
 class FireworksCalendarPage extends StatefulWidget {
-  const FireworksCalendarPage({super.key});
+  final HolidayService? holidayService;
+
+  const FireworksCalendarPage({super.key, this.holidayService});
 
   @override
   State<FireworksCalendarPage> createState() => _FireworksCalendarPageState();
@@ -53,7 +60,7 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   
-  final HolidayService _holidayService = HolidayService();
+  late final HolidayService _holidayService;
   Map<DateTime, List<FireworksEvent>> _events = {};
   bool _isLoading = true;
   String? _errorMessage;
@@ -61,6 +68,7 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
   @override
   void initState() {
     super.initState();
+    _holidayService = widget.holidayService ?? HolidayService();
     _selectedDay = _focusedDay;
     _selectedEvents = ValueNotifier([]);
     _fetchEvents();
@@ -114,6 +122,95 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
     }
   }
 
+  Future<void> _showCalendarDialog(BuildContext context, FireworksEvent event, DateTime date) async {
+    final titleController = TextEditingController(text: "Alerta: ${event.title}");
+    final descController = TextEditingController(
+      text: "${event.description}\n\nLembrete de segurança: Mantenha pets em local seguro e fechado.",
+    );
+    TimeOfDay selectedTime = const TimeOfDay(hour: 20, minute: 0);
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Criar Lembrete', style: TextStyle(color: Colors.amber)),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(labelText: 'Título'),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: descController,
+                      decoration: const InputDecoration(labelText: 'Descrição'),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    ListTile(
+                      title: const Text("Horário"),
+                      trailing: Text(selectedTime.format(context), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      onTap: () async {
+                        final picked = await showTimePicker(
+                          context: context,
+                          initialTime: selectedTime,
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            selectedTime = picked;
+                          });
+                        }
+                      },
+                      tileColor: Colors.black12,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancelar', style: TextStyle(color: Colors.white70)),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final calendarEvent = Event(
+                      title: titleController.text,
+                      description: descController.text,
+                      startDate: DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                        selectedTime.hour,
+                        selectedTime.minute,
+                      ),
+                      endDate: DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                        selectedTime.hour + 1,
+                        selectedTime.minute,
+                      ),
+                      allDay: false,
+                    );
+                    Add2Calendar.addEvent2Cal(calendarEvent);
+                    Navigator.pop(context);
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                  child: const Text('Adicionar', style: TextStyle(color: Colors.black)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,12 +245,60 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
               : Column(
                   children: [
                     _buildCalendar(),
-                    const SizedBox(height: 16),
+                    ValueListenableBuilder<List<FireworksEvent>>(
+                      valueListenable: _selectedEvents,
+                      builder: (context, value, _) {
+                        if (value.isNotEmpty) {
+                          return _buildPetWarningCard();
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                    const SizedBox(height: 8),
                     Expanded(
                       child: _buildEventList(),
                     ),
                   ],
                 ),
+    );
+  }
+
+  Widget _buildPetWarningCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4A1818), // Dark red background
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 32),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Risco de Fogos: Atenção aos Pets',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Feriados e comemorações costumam ter queima de fogos. O barulho excessivo causa pânico e ansiedade severa em animais.\n\nMantenha-os em local seguro, fechado e com som ambiente para abafar os ruídos.',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -275,6 +420,13 @@ class _FireworksCalendarPageState extends State<FireworksCalendarPage> {
                 subtitle: event.description.isNotEmpty
                     ? Text(event.description)
                     : null,
+                trailing: IconButton(
+                  icon: const Icon(Icons.calendar_month, color: Colors.amber),
+                  tooltip: 'Adicionar Lembrete',
+                  onPressed: () {
+                    _showCalendarDialog(context, event, _selectedDay!);
+                  },
+                ),
               ),
             );
           },

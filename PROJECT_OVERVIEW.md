@@ -18,6 +18,13 @@
 - Dark, festive theme ("beautiful" design).
 - Localized for Brazil (pt_BR).
 - Real-time data fetching from `BrasilAPI`.
+- **Pet Safety Warning:** A prominent, serious warning card appears on dates with fireworks, providing advice on how to protect pets from anxiety and panic.
+- **Personalizable Calendar Reminders:** Users can add reminders to their native calendar for fireworks events, with customizable titles, descriptions, and times.
+
+## Testing
+The project includes a comprehensive suite of unit and widget tests:
+- **Unit Tests:** Cover the `FireworksEvent` model and `HolidayService` (using `mockito` to mock HTTP requests).
+- **Widget Tests:** Verify the `FireworksCalendarPage` UI states (loading, error, success) and interactions, mocking the underlying service.
 
 ## File Structure
 - `lib/main.dart`: Main entry point and UI implementation.
